@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>QKM标准品评估管理系统</title>
+	<link rel="stylesheet" type="text/css" href="layui/css/layui.css"  media="all">
+	<script src="layui/jquery-1.8.3.min.js"></script>
+	<style type="text/css">
+		.header span{background: #009688;color: #fff;padding: 10px;margin-left: 30px;line-height: 32px;}
+		.header button{margin: auto 10px; float: right;}
+		.header{border-bottom: 2px #009688 solid;}
+
+	</style>
+
+</head>
+<body>
+	<!--表头-->
+	<div class="header">
+		<span>QKM销售信息表</span>
+		<button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="multiDel()">批量删除</button>
+		<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="add()">添加</button>
+	</div>
+
+	<!--这是查询页面的搜索框逻辑-->
+	<div class="layui-form-item">
+		<div class="layui-inline">
+			<label class="layui-form-label">名称查询</label>
+				<div class="layui-input-inline" >
+					<select id = "lv1"  name="lv1" style="width: 200px;height: 30px" >
+					<option selected="selected">请选择</option>
+					</select>
+				</div>
+		</div>
+		<div class="layui-inline">
+			<label class="layui-form-label">状态查询</label>
+				<div class="layui-input-inline" >
+					<select id = "lv2"  name="lv2" style="width: 200px;height: 30px" >
+						<option selected="selected">请选择</option>
+						<option value="评估中">评估中</option>
+						<option value="测试中">测试中</option>
+						<option value="暂停中">暂停中</option>
+						<option value="已立项">已立项</option>
+						<option value="已取消">已取消</option>
+					</select>
+				</div>
+		</div>
+	</div>
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+	<script type="text/html" id="toolbarDemo">
+	  <div class="layui-btn-container">
+	    <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+	    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+	    <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+	  </div>
+	</script>
+
+	<script type="text/html" id="barDemo">
+	  <a class="layui-btn layui-btn-xs" lay-event="add">编辑</a>
+	  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	</script>
+	
+	<script type="text/html" id="img">
+	  <img src="images/{{d.fileName}}"/>
+	</script>
+
+	<script src="layui/layui.js" charset="utf-8"></script>
+
+	<script>
+	//*********************************************以下是业务逻辑*****************************************
+	/**
+	 *
+	 * @njia 20200924
+	 * @returns add redmine link
+	 */
+	var id_counter = 1;
+	var rowNum = 0;
+	var test ="";
+	var test_redmine = function (d) {
+		//console.log(d);
+		var temp_rem = d.rem.replace("#","");
+		var redmind_link = 'https://rm.qkmtech.com/issues/' + temp_rem;
+		var html = '<a style="color:#1e9fff" href=' + redmind_link + ' lay-event="showRec" target="_Blank">'+d.rem+'</a>';
+		return html;
+	}
+	/**
+	 *
+	 * @Masir @njia 20200925
+	 * @returns font size and font color
+	 */
+	// var test_statu = function (data){
+	// 	data.id = id_counter++;
+	// 	rowNum = data.id
+	// 	var temp_status =data.status;
+	// 	var colored_text;
+	// 	switch (temp_status)
+	// 	{
+	// 		case "评估中":
+	// 			colored_text = '<span class="" style="color:#43CD80">' + data.id +　'</span>';
+	// 			return colored_text;
+	// 			break;
+	// 		case "已立项":
+	// 			colored_text = '<a class="" style="color:#000000">' + data.id +　'</a>';
+	// 			return colored_text;
+	// 			break;
+	// 		case "暂停中":
+	// 			colored_text = '<a class="" style="color:#EEEE00">' + data.id +　'</a>';
+	// 			return colored_text;
+	// 			break;
+	// 		case "已取消":
+	// 			colored_text = '<a class="" style="color:#C1C1C1">' + data.id +　'</a>';
+	// 			return colored_text;
+	// 			break;
+	// 		case "测试中":
+	// 			colored_text = '<a class="" style="color:#FF00FF">' + data.id +　'</a>';
+	// 			return colored_text;
+	// 			break;
+	//
+	// 	}
+	//
+	// }
+
+	layui.use(['form', 'layedit', 'table'], function(){
+	  var table = layui.table;
+	  var form = layui.form
+			// 数据表业务逻辑
+			table.render({
+				elem: '#test'
+				,url:'List1'
+				,method:'post'
+				,toolbar: '#toolbarDemo'
+				,title: '用户数据表'
+				,totalRow: true
+				, even: true //开启隔行背景
+				,cols: [
+						[
+				  {type: 'checkbox', fixed: 'left'}
+				  ,{type: 'numbers',title:'序号',field: 'text'}
+				  //,{field:'id', title:'ID', width:60, fixed: 'left', sort: true, templet: test_statu , style:'font-size:18px'}
+				  ,{field:'projectName', title:'项目名称', width:200}
+				  ,{field:'customName', title:'客户名称', width:200}
+				  ,{field:'customAddress', title:'客户地址', width:100, sort: true}
+				  ,{field:'bussiness', title:'商机号', width:130, sort: true}
+				  ,{field:'manager', title:'客户经理', width:80, sort: true}
+				  ,{field:'industry', title:'行业', width:80, sort: true}
+				  ,{field:'time', title:'导入时间', width:120, sort: true}
+				  ,{field:'rem', title:'Redmine', width:90, templet: test_redmine}
+				  ,{field:'assessor', title:'评估人', width:80}
+				  ,{field:'model', title:'机器人型号', width:130, sort: true}
+				  ,{field:'pingtime', title:'评估工时', width:100, sort: true}
+				  ,{field:'nature', title:'控制器', width:70, sort: true}
+				  ,{field:'status',title:'状态', width:80, sort: true}
+				  ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+				]
+				  ]
+				,page: true
+				,id: 'idTest',
+				done: function (res, curr, count) {
+					console.log("===1===");
+					console.log(res);
+					console.log("===2===");
+					console.log(curr);//打印第一个值
+					console.log("===3===");
+					console.log(count);
+					// 官方介绍  https://www.layui.com/doc/modules/table.html#templet
+					res.data.forEach(function (item, index) {
+						if (item.status == "已立项") {
+							var tr = $(".layui-table").find("tbody tr[data-index='" + index + "'] td[data-field='text']");
+							tr.css("background-color", "#87CEFA");
+						}else if(item.status == "暂停中"){
+							var tr = $(".layui-table").find("tbody tr[data-index='" + index + "'] td[data-field='text']");
+							tr.css("background-color", "#FFFF00");
+						}else if(item.status == "已取消"){
+							var tr = $(".layui-table").find("tbody tr[data-index='" + index + "'] td[data-field='text']");
+							//tr.css("background-color", "#FFB6C1");
+						}
+						else if(item.status == "评估中"){
+							var tr = $(".layui-table").find("tbody tr[data-index='" + index + "'] td[data-field='text']");
+							tr.css("background-color", "#3CB371");
+						}
+
+
+					});
+				}
+			});
+
+		    //工具栏事件
+		    table.on('toolbar(test)', function(obj){
+				var checkStatus = table.checkStatus(obj.config.id);
+				switch(obj.event){
+				  case 'getCheckData':
+					var data = checkStatus.data;
+					layer.alert(JSON.stringify(data));
+				  break;
+				  case 'getCheckLength':
+					var data = checkStatus.data;
+					layer.msg('选中了：'+ data.length + ' 个');
+				  break;
+				  case 'isAll':
+					layer.msg(checkStatus.isAll ? '全选': '未全选')
+				  break;
+				};
+		 	 });
+
+			var test_str = "masir";
+
+			//监听工具条
+			table.on('tool(test)', function(obj){
+			  var data = obj.data;
+			  //console.log(data);
+			  if(obj.event === 'del'){
+				layer.confirm('真的删除行么', function(index){
+					$.ajax({
+						url: "delete",
+						type: "POST",
+						data:{id:data.id},
+						success: function (msg) {
+							if (msg == 200) {
+								//删除这一行
+								obj.del();
+								//关闭弹框
+								layer.close(index);
+								layer.msg("删除成功", {icon: 6});
+							} else {
+								layer.msg("删除失败", {icon: 5});
+							}
+						}
+					});
+				  obj.del();
+				  layer.close(index);
+
+				});
+			  } else if(obj.event === 'add'){
+				  layui.use('layer', function () {
+				  //layer.alert('编辑行：<br>'+ JSON.stringify(data))
+				  layer.open({
+					  type: 2,
+					  title:'修改信息',
+					  area:['840px','600px'], //设置页面大小
+					  content: 'add.html',    //配置需要传递参数的子页面
+					  success: function (layero, index){
+						  var body = layui.layer.getChildFrame('body', index);
+						  console.log(data);
+						  console.log("ss");
+						  //传递参数
+						  body.find("input[name='ID']").val(data.id);
+						  body.find("input[name='projectName']").val(data.projectName);
+						  body.find("input[name='customName']").val(data.customName);
+						  body.find("input[name='customAddress']").val(data.customAddress);
+						  body.find("input[name='bussiness']").val(data.bussiness);
+						  body.find("input[name='manager']").val(data.manager);
+						  body.find("input[name='industry']").val(data.industry);
+						  body.find("input[name='time']").val(data.time);
+						  body.find("input[name='rem']").val(data.rem);
+						  body.find("input[name='Assessor']").val(data.assessor);
+						  body.find("input[name='model']").val(data.model);
+						  body.find("input[name='nature']").val(data.nature);
+						  body.find("input[name='pingtime']").val(data.pingtime);
+						  body.find("input[name='status']").val(data.status);
+
+						  //form.render();
+					  }
+				  });
+				  });
+			  }
+
+			});
+	});
+
+	/*以下是函数体，用于编写业务逻辑*/
+	//新增销售信息
+	function add(){
+		layer.open({
+			type:2,
+			title:'新增QKM标准品评估信息',
+			area:['840px','600px'],
+			content:'edit',
+			success: function (layero, index){
+				var body = layui.layer.getChildFrame('body', index);
+				console.log("ss");
+				//传递参数
+				body.find("input[name='ID']").val(rowNum);
+
+			}
+		});
+	}
+
+	/*
+	* @Author: Masir 20200915
+	* Description: 用于反馈从数据库读取的销售信息名称
+	* */
+	$(function(){
+		$.ajax({
+			"url": "List2 ",
+			"type": "get",
+			"dataType": "json",
+			"success": function(json){
+				console.log(json.data);
+				for(var i=0;i<json.data.length;i++){
+					var ch = json.data[i].name;
+					$("#lv1").append("<option>"+ch+"</option>")
+				}
+			}
+		})
+	})
+
+	/*
+	* @Author: Masir 20200920
+	* Description: Select选项提交(人员查询)
+	* */
+	$("#lv1").change(function(){
+		var qw=$("#lv1").val();
+		id_counter = 1;
+		console.log(qw);
+		test = qw;
+		layui.use(['form', 'layedit', 'table'], function(){
+			var table = layui.table;
+			var form = layui.form
+			table.reload('idTest',{
+				elem: '#test'
+				,url:'/find?id='+qw
+				,method:'post'
+				,toolbar: '#toolbarDemo'
+				,title: '用户数据表'
+				,totalRow: true
+				,cols: [
+					[
+						{type: 'checkbox', fixed: 'left'}
+						,{type: 'numbers',title:'序号',field: 'text'}
+						//,{field:'id', title:'ID', width:60, fixed: 'left', sort: true,templet: test_statu , style:'font-size:18px'}
+						,{field:'projectName', title:'项目名称', width:200}
+						,{field:'customName', title:'客户名称', width:200}
+						,{field:'customAddress', title:'客户地址', width:100, sort: true}
+						,{field:'bussiness', title:'商机号', width:130, sort: true}
+						,{field:'manager', title:'客户经理', width:80, sort: true}
+						,{field:'industry', title:'行业', width:80, sort: true}
+						,{field:'time', title:'导入时间', width:120, sort: true}
+						,{field:'rem', title:'Redmine', width:90, templet: test_redmine}
+						,{field:'assessor', title:'评估人', width:80}
+						,{field:'model', title:'机器人型号', width:130, sort: true}
+						,{field:'pingtime', title:'评估工时', width:100, sort: true}
+						,{field:'nature', title:'控制器', width:70, sort: true}
+						,{field:'status',title:'状态', width:80, sort: true}
+						,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+					]
+				]
+				,page: true
+				,id: 'testReload'
+
+			});
+		});
+
+
+	});
+
+	/*
+	* @Author: Masir 20200928
+	* Description: 选项提交（项目查询）
+	* */
+	$("#lv2").change(function(){
+		var qw=$("#lv2").val();
+		id_counter = 1;
+		console.log(qw);
+
+		layui.use(['form', 'layedit', 'table'], function(){
+			var table = layui.table;
+			var form = layui.form
+			//comfind?com=已立项&name=陈爱
+			//findstatus?stu='+qw
+			if(!test){
+				// 如果用户没有选择人员，会默认按照性质读取
+				console.log("1")
+				table.reload('idTest',{
+					elem: '#test'
+					,url:'/findstatus?stu='+qw
+					,method:'post'
+					,toolbar: '#toolbarDemo'
+					,title: '用户数据表'
+					,totalRow: true
+					,cols: [
+						[
+							{type: 'checkbox', fixed: 'left'}
+							,{type: 'numbers',title:'序号',field: 'text'}
+							//,{field:'id', title:'ID', width:60, fixed: 'left', sort: true,templet: test_statu , style:'font-size:18px'}
+							,{field:'projectName', title:'项目名称', width:200}
+							,{field:'customName', title:'客户名称', width:200}
+							,{field:'customAddress', title:'客户地址', width:100, sort: true}
+							,{field:'bussiness', title:'商机号', width:130, sort: true}
+							,{field:'manager', title:'客户经理', width:80, sort: true}
+							,{field:'industry', title:'行业', width:80, sort: true}
+							,{field:'time', title:'导入时间', width:120, sort: true}
+							,{field:'rem', title:'Redmine', width:90, templet: test_redmine}
+							,{field:'assessor', title:'评估人', width:80}
+							,{field:'model', title:'机器人型号', width:130, sort: true}
+							,{field:'pingtime', title:'评估工时', width:100, sort: true}
+							,{field:'nature', title:'控制器', width:70, sort: true}
+							,{field:'status',title:'状态', width:80, sort: true}
+							,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+						]
+					]
+					,page: true
+					,id: 'testReload'
+				});
+			}else{
+				// 如果用户选择了人员，会根据人员+性质 进行查询
+				console.log("2")
+				table.reload('idTest',{
+					elem: '#test'
+					,url:'/comfind?com='+qw+'&name='+test
+					,method:'post'
+					,toolbar: '#toolbarDemo'
+					,title: '用户数据表'
+					,totalRow: true
+					,cols: [
+						[
+							{type: 'checkbox', fixed: 'left'}
+							,{type: 'numbers',title:'序号',field: 'text'}
+							//,{field:'id', title:'ID', width:60, fixed: 'left', sort: true,templet: test_statu , style:'font-size:18px'}
+							,{field:'projectName', title:'项目名称', width:200}
+							,{field:'customName', title:'客户名称', width:200}
+							,{field:'customAddress', title:'客户地址', width:100, sort: true}
+							,{field:'bussiness', title:'商机号', width:130, sort: true}
+							,{field:'manager', title:'客户经理', width:80, sort: true}
+							,{field:'industry', title:'行业', width:80, sort: true}
+							,{field:'time', title:'导入时间', width:120, sort: true}
+							,{field:'rem', title:'Redmine', width:90, templet: test_redmine}
+							,{field:'assessor', title:'评估人', width:80}
+							,{field:'model', title:'机器人型号', width:130, sort: true}
+							,{field:'pingtime', title:'评估工时', width:100, sort: true}
+							,{field:'nature', title:'控制器', width:70, sort: true}
+							,{field:'status',title:'状态', width:80, sort: true}
+							,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+						]
+					]
+					,page: true
+					,id: 'testReload'
+				});
+			}
+
+		});
+
+
+	});
+
+	</script>
+
+</body>
+</html>

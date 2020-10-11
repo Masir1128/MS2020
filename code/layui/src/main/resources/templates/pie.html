@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="layui/css/layui.css"  media="all">
+	<script src="layui/jquery-1.8.3.min.js"></script>
+	<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<body>
+    <div class="header" style="width: 100%;height: 35px;background-color: #F5F5F5;">
+	<div class="layui-inline">
+		<div class="layui-inline">
+			<label class="layui-form-label">人员查询</label>
+			<div class="layui-input-inline" >
+				<select id = "lv1"  name="lv1" style="width: 200px;height: 30px" >
+					<option selected="selected">请选择</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+	<div id="main" style="width: 100%;height:700px;"></div>
+	<script type="text/javascript">
+		
+		$(function(){
+			$.ajax({
+				"url":"/pieVO1",
+				"type":"POST",
+				"success":function(data){
+					
+					// 基于准备好的dom，初始化echarts实例
+					var myChart = echarts.init(document.getElementById('main'));
+					
+					// 指定图表的配置项和数据
+					/*var option = {
+						backgroundColor: '#F5F5F5',
+
+						title: {
+							text: 'Customized Pie',
+							left: 'center',
+							top: 20,
+							textStyle: {
+								color: '#ccc'
+							}
+						},
+
+						tooltip: {
+							trigger: 'item',
+							formatter: '{a} <br/>{b} : {c} ({d}%)'
+						},
+
+						visualMap: {
+							show: false,
+							min: 80,
+							max: 500,
+							inRange: {
+								colorLightness: [0, 1]
+							}
+						},
+						series: [
+							{
+								name: '访问来源',
+								type: 'pie',
+								radius: '60%',
+								center: ['50%', '50%'],
+								data: data.sort(function (a, b) { return a.value - b.value; }),
+								roseType: 'radius',
+								//设置标签字体和颜色
+								roseType: 'angle',
+								label: {
+									normal: {
+										textStyle: {
+											color: '#000000',
+											fontSize: 16,
+										}
+									}
+								},
+								labelLine: {
+									lineStyle: {
+										color: 'rgba(255, 255, 255, 0.3)'
+									},
+									smooth: 0.2,
+									length: 10,
+									length2: 20
+								},
+								itemStyle: {
+									color: '#c23531',
+									shadowBlur: 200,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								},
+
+								animationType: 'scale',
+								animationEasing: 'elasticOut',
+								animationDelay: function (idx) {
+									return Math.random() * 200;
+								}
+							}
+						]
+					};*/
+
+					var option = {
+						title: {
+							text: 'QKM销售成单率统计',
+							subtext: '真实数据',
+							left: 'center'
+						},
+						tooltip: {
+							trigger: 'item',
+							formatter: '{a} <br/>{b} : {c} ({d}%)'
+						},
+						legend: {
+							// orient: 'vertical',
+							// top: 'middle',
+							orient: 'vertical',
+							left: 'left',
+							data: ['测试中', '评估中', '已立项', '已取消', '暂停中'],
+						},
+						color: ['#32CD32','#90EE90','#00BFFF','#D3D3D3','#FFFF00'],
+						series: [
+							{
+								type: 'pie',
+								radius: '65%',
+								center: ['50%', '50%'],
+								selectedMode: 'single',
+								data: data,
+								label: {
+									normal: {
+										show: true,
+										formatter: '{b} {d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+										textStyle: {
+											color:'black',
+											fontSize: 14,
+										},
+									},
+								},
+								labelLine : {
+									lineStyle:{
+										color:'black'
+									}
+								},
+								emphasis: {
+									itemStyle: {
+										shadowBlur: 10,
+										shadowOffsetX: 0,
+										shadowColor: 'rgba(0, 0, 0, 0.5)'
+									}
+								}
+							}
+						]
+					};
+					
+					// 使用刚指定的配置项和数据显示图表。
+					myChart.setOption(option);
+					
+				}
+			});
+		})
+
+		//响应搜索按钮，根据人员进行查询
+		$(function(){
+			$.ajax({
+				"url": "List2",
+				"type": "get",
+				"dataType": "json",
+				"success": function(json){
+					console.log(json.data);
+					for(var i=0;i<json.data.length;i++){
+						var ch = json.data[i].name;
+
+						$("#lv1").append("<option>"+ch+"</option>")
+					}
+				}
+			})
+		})
+		/**
+		 * 描述：查询
+		 */
+		$("#lv1").change(function(){
+			var qw=$("#lv1").val(); //获取用户选择的人员
+			console.log(qw)
+			$(function(){
+				$.ajax({
+					"url":"pieVO2?name="+qw,
+					"type":"POST",
+					"success":function(data){
+
+						// 基于准备好的dom，初始化echarts实例
+						var myChart = echarts.init(document.getElementById('main'));
+
+						// 指定图表的配置项和数据
+						/*var option = {
+							backgroundColor: '#F5F5F5',
+
+							title: {
+								text: 'Customized Pie',
+								left: 'center',
+								top: 20,
+								textStyle: {
+									color: '#ccc'
+								}
+							},
+
+							tooltip: {
+								trigger: 'item',
+								formatter: '{a} <br/>{b} : {c} ({d}%)'
+							},
+
+							visualMap: {
+								show: false,
+								min: 80,
+								max: 500,
+								inRange: {
+									colorLightness: [0, 1]
+								}
+							},
+							series: [
+								{
+									name: '访问来源',
+									type: 'pie',
+									radius: '60%',
+									center: ['50%', '50%'],
+									data: data.sort(function (a, b) { return a.value - b.value; }),
+									roseType: 'radius',
+									//设置标签字体和颜色
+									roseType: 'angle',
+									label: {
+										normal: {
+											textStyle: {
+												color: '#000000',
+												fontSize: 16,
+											}
+										}
+									},
+									labelLine: {
+										lineStyle: {
+											color: 'rgba(255, 255, 255, 0.3)'
+										},
+										smooth: 0.2,
+										length: 10,
+										length2: 20
+									},
+									itemStyle: {
+										color: '#c23531',
+										shadowBlur: 200,
+										shadowColor: 'rgba(0, 0, 0, 0.5)'
+									},
+
+									animationType: 'scale',
+									animationEasing: 'elasticOut',
+									animationDelay: function (idx) {
+										return Math.random() * 200;
+									}
+								}
+							]
+						};*/
+
+						var option = {
+							title: {
+								text: 'QKM销售成单率统计',
+								subtext: '真实数据',
+								left: 'center'
+							},
+							tooltip: {
+								trigger: 'item',
+								formatter: '{a} <br/>{b} : {c} ({d}%)'
+							},
+							legend: {
+								orient: 'vertical',
+								left: 'left',
+								data: ['测试中', '评估中', '已立项', '已取消', '暂停中'],
+
+							},
+							color: ['#32CD32','#90EE90','#00BFFF','#D3D3D3','#FFFF00'],
+							series: [
+								{
+									type: 'pie',
+									radius: '65%',
+									center: ['50%', '50%'],
+									selectedMode: 'single',
+									data: data,
+									label: {
+										normal: {
+											show: true,
+											formatter: '{b} {d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+											textStyle: {
+												color:'black',
+												fontSize: 14,
+											},
+										},
+									},
+									labelLine : {
+										lineStyle:{
+											color:'black'
+										}
+									},
+									emphasis: {
+										itemStyle: {
+											shadowBlur: 10,
+											shadowOffsetX: 0,
+											shadowColor: 'rgba(0, 0, 0, 0.5)'
+										}
+									}
+								}
+							]
+						};
+
+						// 使用刚指定的配置项和数据显示图表。
+						myChart.setOption(option);
+
+					}
+				});
+			})
+		})
+		
+        
+    </script>
+</body>
+</html>

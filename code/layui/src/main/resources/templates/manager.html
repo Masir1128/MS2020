@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>QKM标准品评估管理系统</title>
+	<link rel="stylesheet" type="text/css" href="layui/css/layui.css"  media="all">
+	<script src="layui/jquery-1.8.3.min.js"></script>
+	<style type="text/css">
+		.header span{background: #009688;color: #fff;padding: 10px;margin-left: 30px;line-height: 32px;}
+		.header button{margin: auto 10px; float: right;}
+		.header{border-bottom: 2px #009688 solid;}
+
+	</style>
+
+</head>
+<body>
+	<!--表头-->
+	<!--表头-->
+	<div class="header">
+		<span>QKM销售成员表</span>
+		<button type="button" class="layui-btn layui-btn-sm layui-btn-danger" onclick="multiDel()">批量删除</button>
+		<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" onclick="add()">添加</button>
+	</div>
+
+
+	<!--这是查询页面的搜索框逻辑-->
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+	<script type="text/html" id="toolbarDemo">
+	  <div class="layui-btn-container">
+	    <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+	    <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+	    <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+	  </div>
+	</script>
+
+	<script type="text/html" id="barDemo">
+	  <a class="layui-btn layui-btn-xs" lay-event="add">编辑</a>
+	  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	</script>
+	
+	<script type="text/html" id="img">
+	  <img src="images/{{d.fileName}}"/>
+	</script>
+
+	<script src="layui/layui.js" charset="utf-8"></script>
+
+	<script>
+
+	layui.use(['form', 'layedit', 'table'], function(){
+	  var table = layui.table;
+	  var form = layui.form
+			// 数据表业务逻辑
+			table.render({
+				elem: '#test'
+				,url:'List2'
+				,method:'post'
+				,toolbar: '#toolbarDemo'
+				,title: '用户数据表'
+				,totalRow: true
+				, width : 800
+				, height : 800
+				, even: true //开启隔行背景
+				,cols: [
+						[
+				  {type: 'checkbox', fixed: 'left'}
+				  ,{type: 'numbers',title:'序号',field: 'text'}
+				  //,{field:'id', title:'ID', width:60, fixed: 'left', sort: true, templet: test_statu , style:'font-size:18px'}
+				  ,{field:'name', title:'姓名', width:200}
+				  ,{field:'bumen', title:'部门', width:200}
+				  ,{field:'gonghao', title:'工号', width:200}
+				  ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+				]
+				  ]
+				,page : true //是否显示分页
+				,
+				limits : [ 10, 20,50, 100 ],
+				limit : 10
+			});
+
+		    //工具栏事件
+		    table.on('toolbar(test)', function(obj){
+				var checkStatus = table.checkStatus(obj.config.id);
+				switch(obj.event){
+				  case 'getCheckData':
+					var data = checkStatus.data;
+					layer.alert(JSON.stringify(data));
+				  break;
+				  case 'getCheckLength':
+					var data = checkStatus.data;
+					layer.msg('选中了：'+ data.length + ' 个');
+				  break;
+				  case 'isAll':
+					layer.msg(checkStatus.isAll ? '全选': '未全选')
+				  break;
+				};
+		 	 });
+
+
+			//监听工具条
+			table.on('tool(test)', function(obj){
+			  var data = obj.data;
+			  //console.log(data);
+			  if(obj.event === 'del'){
+				layer.confirm('真的删除行么', function(index){
+					$.ajax({
+						url: "deleteManager",
+						type: "POST",
+						data:{id:data.id},
+						success: function (msg) {
+							if (msg == 200) {
+								//删除这一行
+								obj.del();
+								//关闭弹框
+								layer.close(index);
+								layer.msg("删除成功", {icon: 6});
+							} else {
+								layer.msg("删除失败", {icon: 5});
+							}
+						}
+					});
+				  obj.del();
+				  layer.close(index);
+
+				});
+			  } else if(obj.event === 'add'){
+				  layui.use('layer', function () {
+				  //layer.alert('编辑行：<br>'+ JSON.stringify(data))
+				  layer.open({
+					  type: 2,
+					  title:'修改信息',
+					  area:['450px','400px'], //设置页面大小
+					  content: 'editmanager.html',    //配置需要传递参数的子页面
+					  success: function (layero, index){
+						  var body = layui.layer.getChildFrame('body', index);
+						  console.log(data);
+						  console.log("ss");
+						  body.find("input[name='ID']").val(data.id);
+						  body.find("input[name='name']").val(data.name);
+						  body.find("input[name='bumen']").val(data.bumen);
+						  body.find("input[name='gonghao']").val(data.gonghao);
+					  }
+				  });
+				  });
+			  }
+
+			});
+	});
+
+	/*以下是函数体，用于编写业务逻辑*/
+	//新增销售信息
+	function add(){
+		layer.open({
+			type:2,
+			title:'新增销售成员信息',
+			area:['450px','400px'],
+			content:'addmanager',
+			success: function (layero, index){
+				var body = layui.layer.getChildFrame('body', index);
+			}
+		});
+	}
+
+
+	</script>
+
+</body>
+</html>

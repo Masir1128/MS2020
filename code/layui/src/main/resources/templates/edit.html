@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <script type="text/javascript" src="layui/layui.js"></script>
+    <script src="layui/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<form class="layui-form" action="/add" method="post">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ID" id="name" placeholder="请输入项目自定义编号" class="layui-input" onkeyup="" value="" >
+        </div>
+
+        <label class="layui-form-label">项目名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="projectName" placeholder="请输入项目名称" id="w" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">客户名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="customName" placeholder="请输入客户名称" id="u" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <label class="layui-form-label">客户地址</label>
+        <div class="layui-input-inline">
+            <input type="text" name="customAddress" placeholder="请输入客户地址" id="l" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">商机号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="bussiness" placeholder="请输入商机号" id="k" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <label class="layui-form-label">客户经理</label>
+        <div class="layui-input-inline">
+            <input type="text" name="manager" placeholder="请输入销售负责人" id="j" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">行业</label>
+        <div class="layui-input-inline">
+            <input type="text" name="industry" placeholder="请输入行业类型" id="h" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label">导入时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="time" id="date" lay-verify="date" placeholder="导入时间" autocomplete="off" class="layui-input"  required="required">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Redmine</label>
+        <div class="layui-input-inline">
+            <input type="text" name="rem" placeholder="Redmine任务号" id="f" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <label class="layui-form-label">评估人</label>
+        <div class="layui-input-inline">
+            <input type="text" name="Assessor" placeholder="请输入评估人" id="d" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">机器人型号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="model" placeholder="请输入机器人型号" id="s" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <label class="layui-form-label">机器人性质</label>
+        <div class="layui-input-inline">
+            <select name="nature" id="suyu" placeholder="请输入机器人性质" lay-verify="required"  required="required">
+                <option value="PA">PA</option>
+                <option value="Pallas">Pallas</option>
+
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-inline">
+            <select name="status" id="1" placeholder="请输入项目状态" lay-verify="required"  required="required">
+                <option value="评估中">评估中</option>
+                <option value="测试中">测试中</option>
+                <option value="暂停中">暂停中</option>
+                <option value="已立项">已立项</option>
+                <option value="已取消">已取消</option>
+            </select>
+        </div>
+
+        <label class="layui-form-label">工时</label>
+        <div class="layui-input-inline">
+            <input type="text" name="pingtime" placeholder="请输入工时" id="d1" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn"  type="submit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+
+</form>
+<script src="layui/layui.js"></script>
+
+<script>
+    //Demo
+    // layui.use('form', function(){
+    //     var form = layui.form;
+    //
+    // });
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+    });
+
+    layui.use(['form', 'layedit', 'laydate'], function(){
+
+        var form = layui.form
+        ,layer = layui.layer
+        ,layedit = layui.layedit
+        ,laydate = layui.laydate;
+        form.render();
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+    });
+
+</script>
+
+
+</body>
+</html>

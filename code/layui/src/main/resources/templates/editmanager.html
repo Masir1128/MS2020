@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <script type="text/javascript" src="layui/layui.js"></script>
+    <script src="layui/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<form class="layui-form" action="/editmanager" method="post">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-inline">
+            <input type="text" name="ID" id="name" placeholder="请输入项目自定义编号" class="layui-input" onkeyup="" value="" >
+        </div>
+
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-inline">
+            <input type="text" name="name" placeholder="请输入项目名称" id="w" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+
+        <label class="layui-form-label">部门</label>
+        <div class="layui-input-inline">
+            <input type="text" name="bumen" placeholder="请输入客户名称" id="u" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+
+        <label class="layui-form-label">工号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="gonghao" placeholder="请输入客户地址" id="l" class="layui-input" onkeyup="" value=""  required="required">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn"  type="submit">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+
+</form>
+
+<script src="layui/layui.js"></script>
+
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+    });
+
+    layui.use(['form', 'layedit', 'laydate'], function(){
+
+        var form = layui.form
+        ,layer = layui.layer
+        ,layedit = layui.layedit
+        ,laydate = layui.laydate;
+        form.render();
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+    });
+
+</script>
+
+
+</body>
+</html>
